@@ -1,5 +1,6 @@
 package com.example.abnd_project6_jonathanfernandezgomez;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +23,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-
 public class MainActivity extends AppCompatActivity {
+
+    Context mainContext;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -35,12 +37,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_activity);
 
+        mainContext = this;
+
         NewsAsyncTask task = new NewsAsyncTask();
         task.execute();
     }
 
     private void updateUi(ArrayList<News> news) {
-
         TextView titleTextView = findViewById(R.id.title);
         titleTextView.setText(news.get(0).title);
 
@@ -152,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(LOG_TAG, "Problem parsing the news JSON results", e);
             }
 
-            NewsAdapter adapter = new NewsAdapter(this, footballNews);
+            NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
             ListView listView = findViewById(R.id.list);
             listView.setAdapter(adapter);
 
