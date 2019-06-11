@@ -3,6 +3,7 @@ package com.example.abnd_project6_jonathanfernandezgomez;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_list_items);
+        setContentView(R.layout.news_activity);
 
         NewsAsyncTask task = new NewsAsyncTask();
         task.execute();
@@ -45,19 +45,13 @@ public class MainActivity extends AppCompatActivity {
         titleTextView.setText(news.get(0).title);
 
         TextView dateTextView = findViewById(R.id.date);
-        dateTextView.setText(getDateString(news.get(0).time));
+        dateTextView.setText(news.get(0).time);
 
         TextView sectionTextView = findViewById(R.id.section);
         sectionTextView.setText(news.get(0).section);
     }
 
-    private String getDateString(long timeInMilliseconds) {
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy 'at' HH:mm:ss z");
-        return formatter.format(timeInMilliseconds);
-    }
-
-
-    private class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
+    class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
 
         @Override
         protected ArrayList<News> doInBackground(URL... urls) {
@@ -145,11 +139,10 @@ public class MainActivity extends AppCompatActivity {
 
                 for (int i = 0; i < resultsArray.length(); i++) {
                     JSONObject firstResult = resultsArray.getJSONObject(i);
-                    JSONObject properties = firstResult.getJSONObject("results");
 
-                    String title = properties.getString("webTitle");
-                    long time = properties.getLong("webPublicationDate");
-                    String section = properties.getString("sectionName");
+                    String title = firstResult.getString("webTitle");
+                    String time = firstResult.getString("webPublicationDate").substring(0, 10);
+                    String section = firstResult.getString("sectionName");
 
                     News news = new News(title, time, section);
 
@@ -158,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "Problem parsing the news JSON results", e);
             }
+
+            NewsAdapter adapter = new NewsAdapter(this, footballNews);
+            ListView listView = findViewById(R.id.list);
+            listView.setAdapter(adapter);
+
             return footballNews;
         }
     }

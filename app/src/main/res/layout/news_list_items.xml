@@ -13,15 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textAllCaps="true"
-        android:textAppearance="?android:textAppearanceSmall" />
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/header_date"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:textColor="#000000"
+        android:textAppearance="?android:textAppearanceMedium" />
 
     <TextView
         android:id="@+id/section"
@@ -30,6 +23,13 @@
         android:paddingTop="16dp"
         android:text="@string/app_name"
         android:textAllCaps="true"
+        android:textAppearance="?android:textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/header_date"
         android:textAppearance="?android:textAppearanceSmall" />
 
 </LinearLayout>
