@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
         public ArrayList<News> extractResultsFromJson(String newsJSON) {
 
-            ArrayList<News> footballNews = new ArrayList<>();
+            final ArrayList<News> footballNews = new ArrayList<>();
 
             try {
                 JSONObject baseResponseObject = new JSONObject(newsJSON);
@@ -155,9 +155,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(LOG_TAG, "Problem parsing the news JSON results", e);
             }
 
-            NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
-            ListView listView = findViewById(R.id.list);
-            listView.setAdapter(adapter);
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
+                    ListView listView = findViewById(R.id.list);
+                    listView.setAdapter(adapter);
+                }
+            });
 
             return footballNews;
         }
