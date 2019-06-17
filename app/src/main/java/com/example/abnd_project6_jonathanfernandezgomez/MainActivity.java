@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         NewsAsyncTask task = new NewsAsyncTask();
         task.execute();
-
     }
 
     class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
@@ -121,18 +120,17 @@ public class MainActivity extends AppCompatActivity {
             final ArrayList<News> footballNews = new ArrayList<>();
 
             try {
-                JSONObject baseJsonResponse = new JSONObject(newsJSON);
-                JSONArray resultsArray = baseJsonResponse.getJSONArray("response");
+                JSONObject baseResponseObject = new JSONObject(newsJSON);
+                JSONObject baseJsonResponse = baseResponseObject.getJSONObject("response");
+                JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
 
                 for (int i = 0; i < resultsArray.length(); i++) {
                     JSONObject firstResult = resultsArray.getJSONObject(i);
 
-                    JSONObject firstNews = firstResult.getJSONObject("results");
-
-                    String title = firstNews.getString("webTitle");
-                    String time = firstNews.getString("webPublicationDate").substring(0, 10);
-                    String section = firstNews.getString("sectionName");
-                    String URL = firstNews.getString("webUrl");
+                    String title = firstResult.getString("webTitle");
+                    String time = firstResult.getString("webPublicationDate").substring(0, 10);
+                    String section = firstResult.getString("sectionName");
+                    String URL = firstResult.getString("webUrl");
 
                     News news = new News(title, time, section, URL);
 
@@ -145,8 +143,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
 
                 @Override
-                public void run() {
-                    NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
+                public void run() {NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
                     ListView listView = findViewById(R.id.list);
                     listView.setAdapter(adapter);
                 }
