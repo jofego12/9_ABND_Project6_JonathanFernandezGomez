@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -41,21 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
         NewsAsyncTask task = new NewsAsyncTask();
         task.execute();
-    }
 
-    private void updateUi(ArrayList<News> news) {
-        TextView titleTextView = findViewById(R.id.title);
-        titleTextView.setText(news.get(0).title);
-
-        TextView dateTextView = findViewById(R.id.date);
-        dateTextView.setText(news.get(0).time);
-
-        TextView sectionTextView = findViewById(R.id.section);
-        sectionTextView.setText(news.get(0).section);
     }
 
     class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
-
         @Override
         protected ArrayList<News> doInBackground(URL... urls) {
             URL url = createUrl(USGS_REQUEST_URL);
@@ -68,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             ArrayList<News> news = extractResultsFromJson(jsonResponse);
-
             return news;
         }
 
@@ -77,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
             if (news == null) {
                 return;
             }
-
-            updateUi(news);
         }
 
         private URL createUrl(String stringUrl) {
@@ -136,18 +121,20 @@ public class MainActivity extends AppCompatActivity {
             final ArrayList<News> footballNews = new ArrayList<>();
 
             try {
-                JSONObject baseResponseObject = new JSONObject(newsJSON);
-                JSONObject baseJsonResponse = baseResponseObject.getJSONObject("response");
-                JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
+                JSONObject baseJsonResponse = new JSONObject(newsJSON);
+                JSONArray resultsArray = baseJsonResponse.getJSONArray("response");
 
                 for (int i = 0; i < resultsArray.length(); i++) {
                     JSONObject firstResult = resultsArray.getJSONObject(i);
 
-                    String title = firstResult.getString("webTitle");
-                    String time = firstResult.getString("webPublicationDate").substring(0, 10);
-                    String section = firstResult.getString("sectionName");
+                    JSONObject firstNews = firstResult.getJSONObject("results");
 
-                    News news = new News(title, time, section);
+                    String title = firstNews.getString("webTitle");
+                    String time = firstNews.getString("webPublicationDate").substring(0, 10);
+                    String section = firstNews.getString("sectionName");
+                    String URL = firstNews.getString("webUrl");
+
+                    News news = new News(title, time, section, URL);
 
                     footballNews.add(news);
                 }
@@ -158,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
 
                 @Override
-                public void run() {NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
+                public void run() {
+                    NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
                     ListView listView = findViewById(R.id.list);
                     listView.setAdapter(adapter);
                 }

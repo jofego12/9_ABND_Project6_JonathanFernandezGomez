@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,16 @@ public class NewsAdapter extends ArrayAdapter<News> {
                     R.layout.news_list_items, parent, false);
         }
 
-        return listItemView;
-    }
+        News currentNews = getItem(position);
+
+        TextView titleView = listItemView.findViewById(R.id.title);
+        titleView.setText(currentNews.getTitle());
+
+        TextView sectionView = listItemView.findViewById(R.id.section);
+        sectionView.setText(currentNews.getSection());
+
+        TextView dateView = listItemView.findViewById(R.id.date);
+        dateView.setText(currentNews.getTime());
+
+        return listItemView;    }
 }

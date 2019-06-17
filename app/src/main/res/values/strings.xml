@@ -6,4 +6,6 @@
     <string name="author_no">No</string>
     <string name="author_yes">Yes</string>
     <string name="author_not_available">Not available</string>
+    <string name="title">Title</string>
+    <string name="section">Section</string>
 </resources>
