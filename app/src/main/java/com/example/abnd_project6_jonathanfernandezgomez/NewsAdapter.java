@@ -19,6 +19,10 @@ public class NewsAdapter extends ArrayAdapter<News> {
         super(mainContext, 0, news);
     }
 
+    public NewsAdapter(Context mainContext) {
+        super(mainContext, 0);
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View listItemView = convertView;
