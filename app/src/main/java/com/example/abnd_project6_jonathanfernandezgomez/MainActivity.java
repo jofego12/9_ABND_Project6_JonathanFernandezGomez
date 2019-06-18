@@ -45,133 +45,129 @@ public class MainActivity extends AppCompatActivity {
         NewsAsyncTask task = new NewsAsyncTask();
         task.execute();
 
-        ListView newsListView = findViewById(R.id.list);
+        /*ListView newsListView = findViewById(R.id.list);
         final NewsAdapter adapter = new NewsAdapter(this);
         newsListView.setAdapter(adapter);
-        newsListView.setOnClickListener(new AdapterView.OnClickListener() {
+        newsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-
-                int position = 0;
-                News currentNews = adapter.getItem(position);
-
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                News currentNews = adapter.getItem(i);
                 Uri newsUri = Uri.parse(currentNews.getURL());
-
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
-
                 startActivity(websiteIntent);
             }
-        });
+        });*/
+    }
 
-        class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
-            @Override
-            protected ArrayList<News> doInBackground(URL... urls) {
-                URL url = createUrl(USGS_REQUEST_URL);
+    class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
+        @Override
+        protected ArrayList<News> doInBackground(URL... urls) {
+            URL url = createUrl(USGS_REQUEST_URL);
 
-                String jsonResponse = "";
-                try {
-                    jsonResponse = makeHttpRequest(url);
-                } catch (IOException e) {
-                    // TODO Handle the IOException
-                }
-
-                ArrayList<News> news = extractResultsFromJson(jsonResponse);
-                return news;
+            String jsonResponse = "";
+            try {
+                jsonResponse = makeHttpRequest(url);
+            } catch (IOException e) {
+                // TODO Handle the IOException
             }
 
-            @Override
-            protected void onPostExecute(ArrayList<News> news) {
-                if (news == null) {
-                    return;
-                }
-            }
+            ArrayList<News> news = extractResultsFromJson(jsonResponse);
+            return news;
+        }
 
-            private URL createUrl(String stringUrl) {
-                URL url;
-                try {
-                    url = new URL(stringUrl);
-                } catch (MalformedURLException exception) {
-                    Log.e(LOG_TAG, "Error with creating URL", exception);
-                    return null;
-                }
-                return url;
-            }
-
-            private String makeHttpRequest(URL url) throws IOException {
-                String jsonResponse = "";
-                HttpURLConnection urlConnection = null;
-                InputStream inputStream = null;
-                try {
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setReadTimeout(10000);
-                    urlConnection.setConnectTimeout(15000);
-                    urlConnection.connect();
-                    inputStream = urlConnection.getInputStream();
-                    jsonResponse = readFromStream(inputStream);
-                } catch (IOException e) {
-                    // TODO: Handle the exception
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                }
-                return jsonResponse;
-            }
-
-            private String readFromStream(InputStream inputStream) throws IOException {
-                StringBuilder output = new StringBuilder();
-                if (inputStream != null) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
-                    BufferedReader reader = new BufferedReader(inputStreamReader);
-                    String line = reader.readLine();
-                    while (line != null) {
-                        output.append(line);
-                        line = reader.readLine();
-                    }
-                }
-                return output.toString();
-            }
-
-            public ArrayList<News> extractResultsFromJson(String newsJSON) {
-
-                final ArrayList<News> footballNews = new ArrayList<>();
-
-                try {
-                    JSONObject baseResponseObject = new JSONObject(newsJSON);
-                    JSONObject baseJsonResponse = baseResponseObject.getJSONObject("response");
-                    JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
-
-                    for (int i = 0; i < resultsArray.length(); i++) {
-                        JSONObject firstResult = resultsArray.getJSONObject(i);
-
-                        String title = firstResult.getString("webTitle");
-                        String time = firstResult.getString("webPublicationDate").substring(0, 10);
-                        String section = firstResult.getString("sectionName");
-                        String URL = firstResult.getString("webUrl");
-
-                        News news = new News(title, time, section, URL);
-
-                        footballNews.add(news);
-                    }
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Problem parsing the news JSON results", e);
-                }
-
-                runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
-                        ListView listView = findViewById(R.id.list);
-                        listView.setAdapter(adapter);
-                    }
-                });
-
-                return footballNews;
+        @Override
+        protected void onPostExecute(ArrayList<News> news) {
+            if (news == null) {
+                return;
             }
         }
+
+        private URL createUrl(String stringUrl) {
+            URL url;
+            try {
+                url = new URL(stringUrl);
+            } catch (MalformedURLException exception) {
+                Log.e(LOG_TAG, "Error with creating URL", exception);
+                return null;
+            }
+            return url;
+        }
+
+        private String makeHttpRequest(URL url) throws IOException {
+            String jsonResponse = "";
+            HttpURLConnection urlConnection = null;
+            InputStream inputStream = null;
+            try {
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setReadTimeout(10000);
+                urlConnection.setConnectTimeout(15000);
+                urlConnection.connect();
+                inputStream = urlConnection.getInputStream();
+                jsonResponse = readFromStream(inputStream);
+            } catch (IOException e) {
+                // TODO: Handle the exception
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            }
+            return jsonResponse;
+        }
+
+        private String readFromStream(InputStream inputStream) throws IOException {
+            StringBuilder output = new StringBuilder();
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                String line = reader.readLine();
+                while (line != null) {
+                    output.append(line);
+                    line = reader.readLine();
+                }
+            }
+            return output.toString();
+        }
+
+        public ArrayList<News> extractResultsFromJson(String newsJSON) {
+
+            final ArrayList<News> footballNews = new ArrayList<>();
+
+            try {
+                JSONObject baseResponseObject = new JSONObject(newsJSON);
+                JSONObject baseJsonResponse = baseResponseObject.getJSONObject("response");
+                JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
+
+                for (int i = 0; i < resultsArray.length(); i++) {
+                    JSONObject firstResult = resultsArray.getJSONObject(i);
+
+                    String title = firstResult.getString("webTitle");
+                    String time = firstResult.getString("webPublicationDate").substring(0, 10);
+                    String section = firstResult.getString("sectionName");
+                    String URL = firstResult.getString("webUrl");
+
+                    News news = new News(title, time, section, URL);
+
+                    footballNews.add(news);
+                }
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Problem parsing the news JSON results", e);
+            }
+
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    NewsAdapter adapter = new NewsAdapter(mainContext, footballNews);
+                    ListView listView = findViewById(R.id.list);
+                    listView.setAdapter(adapter);
+                }
+            });
+
+            return footballNews;
+        }
     }
+}
