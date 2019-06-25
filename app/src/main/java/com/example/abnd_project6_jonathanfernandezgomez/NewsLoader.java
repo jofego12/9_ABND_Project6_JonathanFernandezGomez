@@ -1,8 +1,7 @@
 package com.example.abnd_project6_jonathanfernandezgomez;
 
+import android.content.AsyncTaskLoader;
 import android.content.Context;
-
-import androidx.loader.content.AsyncTaskLoader;
 
 import java.util.List;
 
@@ -31,9 +30,7 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
             return null;
         }
 
-/*
         List<News> news = new MainActivity(MainActivity.NewsAsyncTask);
-*/
         return news;
     }
 }

@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.app.LoaderManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.AsyncTaskLoader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +33,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<News>> {
 
-    Context mainContext;
-    NewsAdapter adapter;
-
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private static final int NEWS_LOADER_ID = 1;
-
     private static final String USGS_REQUEST_URL =
             "https://content.guardianapis.com/search?show-tags=contributor&api-key=test";
+    Context mainContext;
+    NewsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +64,15 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             }
         });
 
-        android.app.LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = getLoaderManager();
 
         loaderManager.initLoader(NEWS_LOADER_ID, null, this);
     }
 
-  /*  @Override
+    @Override
     public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
         return new NewsLoader(this, USGS_REQUEST_URL);
     }
-*/
 
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     }
 
-    /*class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
+    class NewsAsyncTask extends AsyncTaskLoader<URL, Void, ArrayList<News>> {
         @Override
         protected ArrayList<News> loadInBackground(URL... urls) {
             URL url = createUrl(USGS_REQUEST_URL);
@@ -105,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
             ArrayList<News> news = extractResultsFromJson(jsonResponse);
             return news;
-        }*/
+        }
 
         private URL createUrl(String stringUrl) {
             URL url;
