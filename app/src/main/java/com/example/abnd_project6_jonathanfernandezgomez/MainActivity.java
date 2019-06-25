@@ -1,7 +1,9 @@
 package com.example.abnd_project6_jonathanfernandezgomez;
 
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,15 +27,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<News>> {
 
     Context mainContext;
+    NewsAdapter adapter;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
+    private static final int NEWS_LOADER_ID = 1;
+
     private static final String USGS_REQUEST_URL =
-            "https://content.guardianapis.com/search?q=soccer&api-key=test";
+            "https://content.guardianapis.com/search?show-tags=contributor&api-key=test";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,27 +47,53 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.news_activity);
 
         mainContext = this;
-
+        adapter = new NewsAdapter(this);
         NewsAsyncTask task = new NewsAsyncTask();
         task.execute();
 
-        /*ListView newsListView = findViewById(R.id.list);
+        final ListView newsListView = findViewById(R.id.list);
         final NewsAdapter adapter = new NewsAdapter(this);
         newsListView.setAdapter(adapter);
         newsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                News currentNews = adapter.getItem(i);
+                @SuppressWarnings("unchecked")
+                News currentNews = (News) newsListView.getItemAtPosition(i);
                 Uri newsUri = Uri.parse(currentNews.getURL());
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
                 startActivity(websiteIntent);
             }
-        });*/
+        });
+
+        android.app.LoaderManager loaderManager = getLoaderManager();
+
+        loaderManager.initLoader(NEWS_LOADER_ID, null, this);
     }
 
-    class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
+  /*  @Override
+    public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
+        return new NewsLoader(this, USGS_REQUEST_URL);
+    }
+*/
+
+    @Override
+    public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
+        adapter.clear();
+
+        if (data != null && !data.isEmpty()) {
+            adapter.addAll(data);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<News>> loader) {
+        adapter.clear();
+
+    }
+
+    /*class NewsAsyncTask extends AsyncTask<URL, Void, ArrayList<News>> {
         @Override
-        protected ArrayList<News> doInBackground(URL... urls) {
+        protected ArrayList<News> loadInBackground(URL... urls) {
             URL url = createUrl(USGS_REQUEST_URL);
 
             String jsonResponse = "";
@@ -73,14 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
             ArrayList<News> news = extractResultsFromJson(jsonResponse);
             return news;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<News> news) {
-            if (news == null) {
-                return;
-            }
-        }
+        }*/
 
         private URL createUrl(String stringUrl) {
             URL url;
@@ -140,17 +165,30 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject baseResponseObject = new JSONObject(newsJSON);
                 JSONObject baseJsonResponse = baseResponseObject.getJSONObject("response");
                 JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
+                /*JSONObject resultsKey = baseJsonResponse.getJSONObject("results");
+                JSONArray authorsArray = resultsKey.getJSONArray("tags");*/
 
                 for (int i = 0; i < resultsArray.length(); i++) {
-                    JSONObject firstResult = resultsArray.getJSONObject(i);
+                    JSONObject firstResult = resultsArray.getJSONObject(i);/*
+                    JSONObject authorResult = authorsArray.getJSONObject(0);*/
 
                     String title = firstResult.getString("webTitle");
                     String time = firstResult.getString("webPublicationDate").substring(0, 10);
                     String section = firstResult.getString("sectionName");
                     String URL = firstResult.getString("webUrl");
+/*
+                    String author = authorResult.getString("webTitle");
+*/
 
+             /*     if (authorResult.getString("webTitle") != null) {
+
+                        News news = new News(title, time, section, URL, author);
+                        footballNews.add(news);
+                    } else {
+                        News news = new News(title, time, section, URL);
+                        footballNews.add(news);
+                    }*/
                     News news = new News(title, time, section, URL);
-
                     footballNews.add(news);
                 }
             } catch (JSONException e) {

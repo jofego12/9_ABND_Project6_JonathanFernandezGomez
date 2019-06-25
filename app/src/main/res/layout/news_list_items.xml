@@ -32,4 +32,13 @@
         android:text="@string/header_date"
         android:textAppearance="?android:textAppearanceSmall" />
 
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="@string/section"
+        android:textAllCaps="true"
+        android:textAppearance="?android:textAppearanceSmall" />
+
 </LinearLayout>
