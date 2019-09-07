@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">News App</string>
     <string name="header_news">News</string>
-    <string name="header_date">Date</string>
-    <string name="header_author_text_view">Tsunami Alert?</string>
-    <string name="author_no">No</string>
-    <string name="author_yes">Yes</string>
-    <string name="author_not_available">Not available</string>
-    <string name="title">Title</string>
-    <string name="section">Section</string>
+    <string name="no_data_available">ERROR: Problem building the URL. Please try again later.</string>
+    <string name="no_parsing">ERROR: Problem parsing the news JSON results. Please, try again later.</string>
+    <string name="no_displaying">ERROR: Problem retrieving the news JSON results. Please, check your internet connection and try again.</string>
+    <string name="no_request">ERROR: Problem making the HTTP request.. Please, check your connection and try again.</string>
+    <string name="no_input">ERROR: Problem to receive data. Please, try again later.</string>
+    <string name="empty_data">ERROR: Empty data. Please, try again later.</string>
 </resources>

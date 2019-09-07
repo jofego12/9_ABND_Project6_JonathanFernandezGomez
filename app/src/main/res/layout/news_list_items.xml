@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--
+    The following code has being created using Udacity's ud843-QuakeReport (https://github.com/udacity/ud843-QuakeReport)
+    and ud843_Soonami (https://github.com/udacity/ud843_Soonami) apps as a templates.
+    So it may be possible to find some similarities between looking at variable names or styles.
+    -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context="com.example.abnd_project6_jonathanfernandezgomez.MainActivity">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title"
-        android:textColor="#000000"
-        android:textAppearance="?android:textAppearanceMedium" />
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/section"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="@string/section"
+        android:paddingTop="10dp"
         android:textAllCaps="true"
         android:textAppearance="?android:textAppearanceSmall" />
 
@@ -29,15 +31,13 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/header_date"
         android:textAppearance="?android:textAppearanceSmall" />
 
     <TextView
         android:id="@+id/author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="@string/section"
+        android:paddingTop="8dp"
         android:textAllCaps="true"
         android:textAppearance="?android:textAppearanceSmall" />
 

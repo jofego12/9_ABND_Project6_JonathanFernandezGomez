@@ -1,3 +1,9 @@
+/*
+The following code has being created using Udacity's ud843-QuakeReport (https://github.com/udacity/ud843-QuakeReport)
+and ud843_Soonami (https://github.com/udacity/ud843_Soonami) apps as a templates.
+So it may be possible to find some similarities between looking at variable names or styles.
+*/
+
 package com.example.abnd_project6_jonathanfernandezgomez;
 
 import android.app.LoaderManager.LoaderCallbacks;
@@ -10,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.app.LoaderManager;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,12 +24,14 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<News>> {
 
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int NEWS_LOADER_ID = 1;
-    private static final String USGS_REQUEST_URL =
-            "https://content.guardianapis.com/search?show-tags=contributor&api-key=test";
+    private static final String GUARDIAN_REQUEST_URL =
+            "https://content.guardianapis.com/search";
+
     Context mainContext;
     NewsAdapter adapter;
+    public TextView mEmptyStateTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +61,13 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     @Override
     public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
-        return new NewsLoader(this, USGS_REQUEST_URL);
+        Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        uriBuilder.appendQueryParameter("show-tags", "contributor");
+        uriBuilder.appendQueryParameter("api-key", "test");
+
+        return new NewsLoader(this, uriBuilder.toString(), MainActivity.this);
     }
 
     @Override
@@ -61,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
         if (data != null && !data.isEmpty()) {
             adapter.addAll(data);
-        }
+        } else {
+            mEmptyStateTextView = findViewById(R.id.empty_text_view);
+            mEmptyStateTextView.setText(R.string.empty_data);        }
     }
 
     @Override

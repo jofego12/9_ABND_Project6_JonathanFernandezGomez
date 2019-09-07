@@ -1,8 +1,15 @@
+/*
+The following code has being created using Udacity's ud843-QuakeReport (https://github.com/udacity/ud843-QuakeReport)
+and ud843_Soonami (https://github.com/udacity/ud843_Soonami) apps as a templates.
+So it may be possible to find some similarities between looking at variable names or styles.
+*/
+
 package com.example.abnd_project6_jonathanfernandezgomez;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,14 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NewsLoader extends AsyncTaskLoader<List<News>> {
-    private static final String LOG_TAG = NewsLoader.class.getName();
-    private static final String USGS_REQUEST_URL =
-            "https://content.guardianapis.com/search?show-tags=contributor&api-key=test";
-    private String mUrl;
 
-    public NewsLoader(Context context, String url) {
+    private static final String LOG_TAG = NewsLoader.class.getSimpleName();
+    public TextView mEmptyStateTextView;
+    private String mUrl;
+    public MainActivity mainActivityContext;
+
+    public NewsLoader(Context context, String url, MainActivity mainActivityContext) {
         super(context);
         mUrl = url;
+        mEmptyStateTextView = mainActivityContext.findViewById(R.id.empty_text_view);
+        this.mainActivityContext = mainActivityContext;
     }
 
     @Override
@@ -40,13 +50,16 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
         if (mUrl == null) {
             return null;
         }
-        URL url = createUrl(USGS_REQUEST_URL);
+        URL url = createUrl(mUrl);
 
         String jsonResponse = "";
         try {
             jsonResponse = makeHttpRequest(url);
+
         } catch (IOException e) {
-            // TODO Handle the IOException
+            mEmptyStateTextView = mainActivityContext.findViewById(R.id.empty_text_view);
+            mEmptyStateTextView.setText(R.string.no_request);
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
         }
 
         ArrayList<News> news = extractResultsFromJson(jsonResponse);
@@ -58,7 +71,9 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
         try {
             url = new URL(stringUrl);
         } catch (MalformedURLException exception) {
-            Log.e(LOG_TAG, "Error with creating URL", exception);
+            mEmptyStateTextView = mainActivityContext.findViewById(R.id.empty_text_view);
+            mEmptyStateTextView.setText(R.string.no_data_available);
+            Log.e(LOG_TAG, "Problem building the URL ", exception);
             return null;
         }
         return url;
@@ -77,7 +92,9 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
             inputStream = urlConnection.getInputStream();
             jsonResponse = readFromStream(inputStream);
         } catch (IOException e) {
-            // TODO: Handle the exception
+            mEmptyStateTextView = mainActivityContext.findViewById(R.id.empty_text_view);
+            mEmptyStateTextView.setText(R.string.no_displaying);
+            Log.e(LOG_TAG, "Problem retrieving the news JSON results.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -99,6 +116,10 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
                 output.append(line);
                 line = reader.readLine();
             }
+        } else {
+            mEmptyStateTextView = mainActivityContext.findViewById(R.id.empty_text_view);
+            mEmptyStateTextView.setText(R.string.no_input);
+            Log.e("readingError", "Problem to receive data.");
         }
         return output.toString();
     }
@@ -111,36 +132,31 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
             JSONObject baseResponseObject = new JSONObject(newsJSON);
             JSONObject baseJsonResponse = baseResponseObject.getJSONObject("response");
             JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
-                /*JSONObject resultsKey = baseJsonResponse.getJSONObject("results");
-                JSONArray authorsArray = resultsKey.getJSONArray("tags");*/
 
             for (int i = 0; i < resultsArray.length(); i++) {
-                JSONObject firstResult = resultsArray.getJSONObject(i);/*
-                    JSONObject authorResult = authorsArray.getJSONObject(0);*/
+                JSONObject firstResult = resultsArray.getJSONObject(i);
+                JSONArray authorsArray = firstResult.getJSONArray("tags");
+                JSONObject authorResult = authorsArray.getJSONObject(0);
 
                 String title = firstResult.getString("webTitle");
                 String time = firstResult.getString("webPublicationDate").substring(0, 10);
                 String section = firstResult.getString("sectionName");
                 String URL = firstResult.getString("webUrl");
-/*
-                    String author = authorResult.getString("webTitle");
-*/
 
-             /*     if (authorResult.getString("webTitle") != null) {
+                String author = authorResult.getString("webTitle");
 
-                        News news = new News(title, time, section, URL, author);
-                        footballNews.add(news);
-                    } else {
-                        News news = new News(title, time, section, URL);
-                        footballNews.add(news);
-                    }*/
+                if (authorResult.getString("webTitle") != null) {
+                    News news = new News(title, time, section, URL, author);
+                    footballNews.add(news);
+                }
                 News news = new News(title, time, section, URL);
                 footballNews.add(news);
             }
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Problem parsing the news JSON results", e);
+            mEmptyStateTextView = mainActivityContext.findViewById(R.id.empty_text_view);
+            mEmptyStateTextView.setText(R.string.no_parsing);
+            Log.e("NewsArrayError", "Problem parsing the news JSON results", e);
         }
-
         return footballNews;
-        }
+    }
 }
